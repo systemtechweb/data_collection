@@ -61,6 +61,13 @@ def dbCall(id):
     +"<br> wind direction: "+get_forecast.wind_direction \
     +"<br> swell height ft: "+str(get_forecast.swell_ht_ft)
 
+@app.route('/show_cleveland')
+def dbCallCleveland():
+
+    get_forecast =  Forecast.query.filter_by(location='Cleveland').all()
+    print(get_forecast[0].created_at)
+    return "done" 
+
 
 @app.route('/show_all_data')
 def dbCallAll():
