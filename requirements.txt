@@ -19,3 +19,8 @@ virtualenv==20.26.2
 Werkzeug==3.0.3
 psycopg[c]; sys_platform == "linux"
 psycopg[binary]; sys_platform != "linux"
+Flask-SQLAlchemy==3.1.1
+MarkupSafe==2.1.5
+psycopg2-binary==2.9.9
+SQLAlchemy==2.0.31
+typing_extensions==4.12.2
