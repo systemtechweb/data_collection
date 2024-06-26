@@ -1,10 +1,8 @@
-#!/usr/bin/env python3
-import os
+import pika, os
 import requests
 from flask import Flask, render_template, request, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
-import pika
 
 app = Flask(__name__)
 
@@ -14,10 +12,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 url = os.environ.get('CLOUDAMQP_URL', 'amqps://ietfgcja:mO2moIbKdiKWUNlcM8Ck7VlzvcYYDvMg@shark.rmq.cloudamqp.com/ietfgcja')
-params = pika.URLParameters(url)
-connection = pika.BlockingConnection(params)
-channel = connection.channel() # start a channel
-channel.queue_declare(queue='forecasts') # Declare a queue
 
 class Forecast(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -41,32 +35,30 @@ def deleteForecasts():
    delete_forecasts = Forecast.query.delete()
    return delete_forecasts
 
-def deleteLocationForecasts(city):
-   delete_forecasts = Forecast.query.filter_by(location=city).delete()
-   return delete_forecasts
+params = pika.URLParameters(url)
+connection = pika.BlockingConnection(params)
+channel = connection.channel() 
+channel.queue_declare(queue='forecasts') 
 
 def callback(ch, method, properties, body):
-  print(" [x] Received " + str(body))
   city = body.decode('ASCII')
+  print(" [x] Received " + city)
   response = requests.get('http://api.weatherapi.com/v1/marine.json?key=83630e43f1404792967173131241606&q='+city+'&days=1')
   forecast_response = response.json()
   print(forecast_response['forecast']['forecastday'][0]['day']['avgtemp_f'])
   forecast = Forecast( location=forecast_response['location']['name'], \
-  avg_temp=forecast_response['forecast']['forecastday'][0]['day']['avgtemp_f'], \
-  wind_speed=forecast_response['forecast']['forecastday'][0]['hour'][0]['wind_mph'], \
-  wind_direction=forecast_response['forecast']['forecastday'][0]['hour'][0]['wind_dir'], \
-  condition=forecast_response['forecast']['forecastday'][0]['hour'][0]['condition']['text'], \
-  swell_ht_ft=forecast_response['forecast']['forecastday'][0]['hour'][0]['swell_ht_ft'], \
-  hour=0 )
+     avg_temp=forecast_response['forecast']['forecastday'][0]['day']['avgtemp_f'], \
+     wind_speed=forecast_response['forecast']['forecastday'][0]['hour'][0]['wind_mph'], \
+     wind_direction=forecast_response['forecast']['forecastday'][0]['hour'][0]['wind_dir'], \
+     condition=forecast_response['forecast']['forecastday'][0]['hour'][0]['condition']['text'], \
+     swell_ht_ft=forecast_response['forecast']['forecastday'][0]['hour'][0]['swell_ht_ft'], \
+     hour=0 )
   print("PULLING DATA FOR",forecast_response['location']['name'])
+  print(forecast)  
   with app.app_context():
-    get_forecast =  Forecast.query.filter_by(location=city).all()
-    print(get_forecast)
-    deleteLocationForecasts(city)
-    get_forecast =  Forecast.query.filter_by(location=city).all()
-    print(get_forecast)
-    db.session.add(forecast)
-    db.session.commit()
+     db.session.add(forecast)
+     db.session.commit()
+
 
 channel.basic_consume('forecasts',
                       callback,
@@ -75,4 +67,3 @@ channel.basic_consume('forecasts',
 print(' [*] Waiting for messages:')
 channel.start_consuming()
 connection.close()
-
