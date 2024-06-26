@@ -66,7 +66,7 @@ def dbCallCleveland():
 
     get_forecast =  Forecast.query.filter_by(location='Cleveland').all()
     print(get_forecast[0].created_at)
-    return "done" 
+    return get_forecast[0].created_at
 
 
 @app.route('/show_all_data')
