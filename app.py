@@ -93,6 +93,11 @@ def callback(ch, method, properties, body):
   forecast_response = response.json()
   print(forecast_response['forecast']['forecastday'][0]['day']['avgtemp_f'])
   location = forecast_response['location']['name']
+  with app.app_context():
+    svs = Forecasts.query.filter_by(location=location).delete()
+    print(svs)
+    db.session.commit()
+    print('deleted', location)
   with app.app_context():  
     deleteLocationForecasts(location)
   days = forecast_response['forecast']['forecastday']
@@ -156,12 +161,11 @@ def callback(ch, method, properties, body):
    h10_wind_direction = hour_16_wind_direction, \
    h10_swell_ht_ft = hour_16_waves) 
       with app.app_context():
-        get_forecast =  Forecasts.query.filter_by(location=city).all()
-        print(get_forecast)
-        get_forecast =  Forecasts.query.filter_by(location=city).all()
-        print(get_forecast)
-        db.session.add(forecast)
+        
+        svs = db.session.add(forecast)
         db.session.commit()
+        print(svs)
+        print( day_date , "DONE")
   print("test output",str(hour_4_waves))
 channel.basic_consume('forecasts',
                       callback,
