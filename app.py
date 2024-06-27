@@ -106,7 +106,9 @@ def callback(ch, method, properties, body):
     db.session.commit()
     print('deleted', location)
   with app.app_context():  
-    deleteLocationForecasts(location)
+   print("deleting", location)  
+   deleteLocationForecasts(location)
+   db.session.commit()
   days = forecast_response['forecast']['forecastday']
   for day in days:
       day_date = day['date']
