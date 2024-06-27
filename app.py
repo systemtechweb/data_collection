@@ -86,6 +86,13 @@ def deleteLocationForecasts(city):
    delete_forecasts = Forecasts.query.filter_by(location=city).delete()
    return delete_forecasts
 
+def saveDay(forecast):
+    print(forecast.day, "BEFORE")
+    save_day = db.session.add(forecast)
+    db.session.commit()
+    print(save_day)
+    return save_day
+
 def callback(ch, method, properties, body):
   print(" [x] Received " + str(body))
   city = body.decode('ASCII')
@@ -161,11 +168,8 @@ def callback(ch, method, properties, body):
    h10_wind_direction = hour_16_wind_direction, \
    h10_swell_ht_ft = hour_16_waves) 
       with app.app_context():
-        
-        svs = db.session.add(forecast)
-        db.session.commit()
-        print(svs)
-        print( day_date , "DONE")
+        saveDay(forecast)     
+      del forecast
   print("test output",str(hour_4_waves))
 channel.basic_consume('forecasts',
                       callback,
