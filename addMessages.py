@@ -6,7 +6,7 @@ connection = pika.BlockingConnection(params)
 channel = connection.channel() # start a channel
 channel.queue_declare(queue='forecasts') # Declare a queue
 
-cities = ["New York", "Los Angeles", "Houston", "Seattle", "Savannah", "Oakland", "Charleston", "Norfolk", "Miami", "Port Everglades", "Tacoma", "New Orleans", "Baltimore", "Jacksonville", "Philadelphia", "San Juan", "San Diego", "Boston", "Mobile", "Long Beach", "Port Hueneme", "Wilmington", "Corpus Christi", "Portland", "Tampa", "Anchorage", "Beaumont", "Honolulu", "Newark", "Richmond", "Palm Beach", "Galveston", "Brownsville", "Port Arthur", "Detroit", "Chicago", "Baton Rouge", "Memphis", "Laredo", "Buffalo", "Cleveland", "Cincinnati", "Louisville",  "St Paul", "Pittsburgh", "Albany", "Oklahoma City", "St Louis"]
+cities = ["New York", "Los Angeles", "Houston", "Seattle", "Savannah", "Oakland", "Charleston", "Norfolk", "Miami", "Port Everglades", "Tacoma", "New Orleans", "Baltimore", "Jacksonville", "Philadelphia", "San Juan", "San Diego", "Boston", "Mobile", "Long Beach", "Port Hueneme", "Wilmington", "Corpus Christi", "Portland", "Tampa", "Anchorage", "Beaumont", "Honolulu", "Newark", "Richmond", "Palm Beach", "Galveston", "Brownsville", "Port Arthur", "Detroit", "Chicago", "Baton Rouge", "Memphis", "Laredo", "Buffalo", "Cleveland", "Cincinnati", "Louisville",  "Pittsburgh", "Albany", "Oklahoma City" ]
 #cities = ["New York", "Los Angeles"]
 #cities = ["New York"]
 for city in cities:
